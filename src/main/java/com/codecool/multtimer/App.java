@@ -32,16 +32,20 @@ public class App {
                 TEA.getTimer().interrupt();
             else if (userInput.equals("stop COFFEE"))
                 COFFEE.getTimer().interrupt();
-            else if (userInput.equals("exit"))
-                break;
+            else if (userInput.equals("exit")) {
+                System.exit(0);
+            }
 
             userInput = getUserInput();
         }
     }
 
     private void printTimer(Timer timer) {
-        System.out.println("Name: " + timer.getTimerName() + ", ThreadID: " +
-        timer.getTimer().getId() + ", Seconds: " + timer.checkTimer());
+        if (timer.getTimer() == null)
+            System.out.println("Timer not started.");
+        else
+            System.out.println("Name: " + timer.getTimerName() + ", ThreadID: " +
+                timer.getTimer().getId() + ", Seconds: " + timer.checkTimer());
     }
 
     private void checkTimers() {
