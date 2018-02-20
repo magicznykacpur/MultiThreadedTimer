@@ -7,7 +7,7 @@ public class Timer implements Runnable {
     private boolean stop;
     private String timerName;
 
-    public Timer(String timerName) {
+    Timer(String timerName) {
         this.timer = null;
         this.stop = false;
         this.timerCount = 0;
@@ -28,21 +28,32 @@ public class Timer implements Runnable {
 
     }
 
-    public void start() {
+    void start() {
         timer = new Thread(this, this.getTimerName());
         stop = false;
         timer.start();
+        System.out.println("Started timer: " + this.getTimerName());
     }
 
-    public int checkTimer() {
+    void stopTimer() {
+        this.timer.interrupt();
+    }
+
+    public String toString() {
+        return "Name: " + this.getTimerName() +
+                ", ThreadID: " + this.getTimer().getId() +
+                ", Seconds: " + this.getTimerCount();
+    }
+
+    private int getTimerCount() {
         return timerCount;
     }
 
-    public Thread getTimer() {
+    private Thread getTimer() {
         return timer;
     }
 
-    public String getTimerName() {
+    String getTimerName() {
         return timerName;
     }
 }

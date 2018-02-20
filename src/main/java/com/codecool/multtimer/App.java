@@ -1,75 +1,91 @@
 package com.codecool.multtimer;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
 
-    private Timer TEA;
-    private Timer COFFEE;
+    private List<Timer> timers;
 
     private App() {
-        this.TEA = new Timer("TEA");
-        this.COFFEE = new Timer("COFFEE");
+        this.timers = new LinkedList<Timer>();
     }
 
-    private void loopTimers(){
-
-        String userInput = getUserInput();
+    private void loopTimers() {
+        String[] userInput = getUserInput();
 
         while (true) {
-
-            if (userInput.equals("start TEA"))
-                TEA.start();
-            else if (userInput.equals("start COFFEE"))
-                COFFEE.start();
-            else if (userInput.equals("check"))
+            if (ifNewTimer(userInput))
+                addTimer(userInput);
+            else if (ifStopTimer(userInput))
+                stopTimer(userInput);
+            else if (ifCheckTimer(userInput))
+                checkTimer(userInput);
+            else if (ifCheckTimers(userInput))
                 checkTimers();
-            else if (userInput.equals("check TEA"))
-                printTimer(TEA);
-            else if (userInput.equals("check COFFEE"))
-                printTimer(COFFEE);
-            else if (userInput.equals("stop TEA"))
-                TEA.getTimer().interrupt();
-            else if (userInput.equals("stop COFFEE"))
-                COFFEE.getTimer().interrupt();
-            else if (userInput.equals("exit")) {
+            else if (ifExit(userInput))
                 System.exit(0);
-            }
 
             userInput = getUserInput();
         }
     }
 
-    private void printTimer(Timer timer) {
-        if (timer.getTimer() == null)
-            System.out.println("Timer not started.");
-        else
-            System.out.println("Name: " + timer.getTimerName() + ", ThreadID: " +
-                timer.getTimer().getId() + ", Seconds: " + timer.checkTimer());
+    private boolean ifNewTimer(String[] userInput) {
+        return userInput[0].equals("start");
+    }
+
+    private boolean ifStopTimer(String[] userInput) {
+        return userInput[0].equals("stop");
+    }
+
+    private void stopTimer(String[] userInput) {
+        for (Timer t : timers)
+            if (userInput[1].equals(t.getTimerName()))
+                t.stopTimer();
+    }
+
+    private boolean ifCheckTimer(String[] userInput) {
+        return userInput[0].equals("check") && userInput.length == 2;
+    }
+
+    private void checkTimer(String[] userInput) {
+        for (Timer t : timers)
+            if (userInput[1].equals(t.getTimerName()))
+                System.out.println(t.toString());
+
+    }
+
+    private boolean ifCheckTimers(String[] userInput) {
+        return userInput[0].equals("check") && userInput.length == 1;
     }
 
     private void checkTimers() {
-        if (COFFEE.getTimer() != null && TEA.getTimer() != null)
-            System.out.println("Name: TEA, ThreadID: " + TEA.getTimer().getId() +
-                    ", Seconds: " + TEA.checkTimer() +
-                    "\nName: COFFEE, ThreadID: " + COFFEE.getTimer().getId() +
-                    ", Seconds: " + COFFEE.checkTimer() + "\n");
+        StringBuilder sb = new StringBuilder();
+
+        if (timers.size() == 0)
+            System.out.println("No timers started yet.");
         else {
-            if (TEA.getTimer() != null)
-                System.out.println("Name: TEA, ThreadID: " + TEA.getTimer().getId() +
-                        ", Seconds: " + TEA.checkTimer());
-            else if (COFFEE.getTimer() != null)
-                System.out.println("Name: COFFEE, ThreadID: " + COFFEE.getTimer().getId() +
-                        ", Seconds: " + COFFEE.checkTimer());
-            else
-                System.out.println("Timers not started.");
+            for (Timer t : timers)
+                sb.append(t.toString() + "\n");
+
+            System.out.println(sb.toString());
         }
     }
 
+    private boolean ifExit(String[] userInput) {
+        return userInput[0].equals("exit");
+    }
 
-    private String getUserInput() {
+    private void addTimer(String[] userInput) {
+        Timer timer = new Timer(userInput[1]);
+        timer.start();
+        timers.add(timer);
+    }
+
+    private String[] getUserInput() {
         Scanner s = new Scanner(System.in);
-        return s.nextLine();
+        return s.nextLine().split(" ");
     }
 
     public static void main(String[] args) {
